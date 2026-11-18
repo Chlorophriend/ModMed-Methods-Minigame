@@ -1,0 +1,26 @@
+{
+  "rules": {
+    ".read": false,
+    ".write": false,
+    "rooms": {
+      "$room": {
+        ".read": "auth != null",
+        "meta": {
+          ".write": "auth != null && $room.matches(/^[A-Z][A-Z][A-Z][A-Z]$/) && (!data.exists() || data.child('host').val() === auth.uid)",
+          ".validate": "newData.child('host').val() === auth.uid && newData.child('state').isString()"
+        },
+        "players": {
+          "$uid": {
+            ".write": "auth != null && root.child('rooms').child($room).child('meta').exists() && (auth.uid === $uid || root.child('rooms').child($room).child('meta').child('host').val() === auth.uid)",
+            ".validate": "newData.child('name').isString() && newData.child('name').val().length >= 1 && newData.child('name').val().length <= 24",
+            "answers": {
+              "$q": {
+                ".validate": "newData.child('raw').isString() && newData.child('raw').val().length <= 200 && newData.child('idx').isNumber()"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
